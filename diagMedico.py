@@ -1,17 +1,27 @@
 import networkx as nx
 import pandas as pd
 import nltk
+from tkinter import Tk, Label, Listbox, Button, messagebox, font
+
 nltk.download('punkt')
-from nltk.tokenize import word_tokenize
 
 # Carregar dados médicos em um dataframe pandas
-data = pd.read_csv('medical_data.csv')
+data = pd.DataFrame({
+    'sintoma': ['febre', 'tosse', 'dor de cabeça', 'dor de garganta', 'coriza', 
+                'dor muscular', 'fadiga', 'dor no peito', 'falta de ar', 'tontura'],
+    'doenca': ['gripe', 'gripe', 'enxaqueca', 'amigdalite', 'resfriado', 
+               'gripe', 'anemia', 'doença cardíaca', 'asma', 'vertigem'],
+    'tratamento': ['repouso e hidratação', 'xarope para tosse', 'analgésicos', 
+                   'antibióticos', 'descongestionantes', 'analgésicos', 
+                   'suplementos de ferro', 'monitoramento cardíaco', 
+                   'bombinha', 'medicamento para vertigem']
+})
 
 # Pré-processar os dados para criar uma base de conhecimento estruturada
 data.dropna(inplace=True)  # Remove linhas com valores ausentes
 data.drop_duplicates(inplace=True)  # Remove linhas duplicadas
 
-# Criar um dicionário para armazenar a base de conhecimento, com sintomas em letras minúsculas
+# Criar um dicionário para armazenar a base de conhecimento
 base_conhecimento = {}
 for index, row in data.iterrows():
     sintoma = row['sintoma'].strip().lower()  # Normaliza para minúsculas
@@ -35,12 +45,7 @@ for index, row in data.iterrows():
     G.add_edge(sintoma, doenca)
     G.add_edge(doenca, tratamento)
 
-# Definir uma função para processar a entrada do usuário
-def processar_entrada(texto_entrada):
-    tokens = texto_entrada.lower().split()  # Normaliza para minúsculas e tokeniza
-    return tokens
-
-# Definir uma função para realizar diagnóstico e planejamento de tratamento
+# Função para diagnosticar com base nos sintomas selecionados
 def diagnosticar(sintomas):
     diagnosticos_possiveis = set()
     tratamentos_possiveis = set()
@@ -58,12 +63,10 @@ def diagnosticar(sintomas):
                             
     return list(diagnosticos_possiveis), list(tratamentos_possiveis)
 
-# Definir uma função para lidar com a entrada do usuário e perguntar sobre os sintomas
-def lidar_entrada():
-    # Perguntar ao usuário o que ele está sentindo
-    texto_entrada = input("Por favor, descreva seus sintomas: ")
-    tokens = processar_entrada(texto_entrada)
-    sintomas = [token for token in tokens if token in base_conhecimento]
+# Função para lidar com a seleção de sintomas
+def obter_diagnostico():
+    sintomas_selecionados = listbox.curselection()  # Obtém os índices dos sintomas selecionados
+    sintomas = [listbox.get(i) for i in sintomas_selecionados]  # Converte os índices em sintomas
     
     # Obter diagnóstico e tratamento com base nos sintomas
     diagnostico, tratamento = diagnosticar(sintomas)
@@ -73,7 +76,36 @@ def lidar_entrada():
         resposta = 'Com base nos seus sintomas, os possíveis diagnósticos são: {}\nOs possíveis tratamentos são: {}'.format(diagnostico, tratamento)
     else:
         resposta = 'Nenhum diagnóstico ou tratamento correspondente foi encontrado para os sintomas fornecidos.'
-    print(resposta)
+    
+    messagebox.showinfo("Resultado", resposta)
 
-# Executar a interação
-lidar_entrada()
+# Criar a interface gráfica
+root = Tk()
+root.title("Sistema de Diagnóstico Médico")
+
+# Configurar a fonte
+titulo_font = font.Font(family="Helvetica", size=16, weight="bold")
+texto_font = font.Font(family="Helvetica", size=12)
+
+# Título
+# Título
+titulo_label = Label(root, text="Bem-vindo ao Sistema de Diagnóstico Médico", font=titulo_font)
+titulo_label.pack(pady=10)
+
+# Explicação
+explicacao_label = Label(root, text="Selecione seus sintomas na lista abaixo e clique em 'Obter Diagnóstico'.", font=texto_font)
+explicacao_label.pack(pady=5)
+
+# Listbox para seleção de sintomas
+listbox = Listbox(root, selectmode='multiple', font=texto_font, width=50, height=10)
+for sintoma in base_conhecimento.keys():
+    listbox.insert('end', sintoma)  # Adiciona cada sintoma à Listbox
+
+listbox.pack(pady=10)
+
+# Botão para obter o diagnóstico
+botao_diagnostico = Button(root, text="Obter Diagnóstico", command=obter_diagnostico, font=texto_font)
+botao_diagnostico.pack(pady=10)
+
+# Iniciar o loop da interface gráfica
+root.mainloop()
