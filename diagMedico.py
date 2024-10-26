@@ -73,7 +73,7 @@ def obter_diagnostico():
     
     # Gerar resposta com base no diagnóstico e tratamento
     if diagnostico and tratamento:
-        resposta = 'Com base nos seus sintomas, os possíveis diagnósticos são: {}\nOs possíveis tratamentos são: {}'.format(diagnostico, tratamento)
+                resposta = 'Com base nos seus sintomas, os possíveis diagnósticos são: {}\nOs possíveis tratamentos são: {}'.format(diagnostico, tratamento)
     else:
         resposta = 'Nenhum diagnóstico ou tratamento correspondente foi encontrado para os sintomas fornecidos.'
     
@@ -86,8 +86,8 @@ root.title("Sistema de Diagnóstico Médico")
 # Configurar a fonte
 titulo_font = font.Font(family="Helvetica", size=16, weight="bold")
 texto_font = font.Font(family="Helvetica", size=12)
+texto_font2 = font.Font(family="Helvetica", size=10)  # Definindo uma fonte menor
 
-# Título
 # Título
 titulo_label = Label(root, text="Bem-vindo ao Sistema de Diagnóstico Médico", font=titulo_font)
 titulo_label.pack(pady=10)
@@ -106,6 +106,10 @@ listbox.pack(pady=10)
 # Botão para obter o diagnóstico
 botao_diagnostico = Button(root, text="Obter Diagnóstico", command=obter_diagnostico, font=texto_font)
 botao_diagnostico.pack(pady=10)
+
+# Exemplo de uso de cor no texto
+informacao_label = Label(root, text="Nota: Este sistema é apenas informativo.", font=texto_font2, fg="red")  # Usando a cor vermelha
+informacao_label.pack(pady=5)
 
 # Iniciar o loop da interface gráfica
 root.mainloop()
