@@ -1,115 +1,132 @@
 import networkx as nx
 import pandas as pd
 import nltk
-from tkinter import Tk, Label, Listbox, Button, messagebox, font
+from tkinter import Tk, Label, Listbox, Button, messagebox, font, Scrollbar, Frame
 
 nltk.download('punkt')
 
-# Carregar dados médicos em um dataframe pandas
+# Load medical data into a pandas DataFrame
 data = pd.DataFrame({
-    'sintoma': ['febre', 'tosse', 'dor de cabeça', 'dor de garganta', 'coriza', 
-                'dor muscular', 'fadiga', 'dor no peito', 'falta de ar', 'tontura'],
-    'doenca': ['gripe', 'gripe', 'enxaqueca', 'amigdalite', 'resfriado', 
-               'gripe', 'anemia', 'doença cardíaca', 'asma', 'vertigem'],
-    'tratamento': ['repouso e hidratação', 'xarope para tosse', 'analgésicos', 
-                   'antibióticos', 'descongestionantes', 'analgésicos', 
-                   'suplementos de ferro', 'monitoramento cardíaco', 
-                   'bombinha', 'medicamento para vertigem']
+    'sintoma': ['febre', 'tosse', 'dor de cabeça', 'dor de garganta', 'coriza',
+                'dor muscular', 'fadiga', 'dor no peito', 'falta de ar', 'tontura',
+                'suor noturno', 'perda de peso', 'inchaço', 'confusão mental', 'visão turva',
+                'náusea', 'vômito', 'diarreia', 'erupção cutânea', 'dificuldade para engolir'],
+    'doenca': ['gripe', 'gripe', 'enxaqueca', 'amigdalite', 'resfriado',
+               'gripe', 'anemia', 'doença cardíaca', 'asma', 'vertigem',
+               'tuberculose', 'câncer', 'doença renal', 'AVC', 'diabetes',
+               'gastroenterite', 'intoxicação alimentar', 'alergia', 'esofagite', 'faringite'],
+    'tratamento': ['repouso e hidratação', 'xarope para tosse', 'analgésicos',
+                   'antibióticos', 'descongestionantes', 'analgésicos',
+                   'suplementos de ferro', 'monitoramento cardíaco',
+                   'bombinha', 'medicamento para vertigem',
+                   'antibióticos', 'quimioterapia', 'diuréticos',
+                   'atendimento emergencial', 'controle de glicose',
+                   'hidratação e repouso', 'medicamentos antieméticos', 'antihistamínicos', 'inibidores de bomba de prótons', 'antibióticos']
 })
 
-# Pré-processar os dados para criar uma base de conhecimento estruturada
-data.dropna(inplace=True)  # Remove linhas com valores ausentes
-data.drop_duplicates(inplace=True)  # Remove linhas duplicadas
+# Specific disease combinations
+doencas_especificas = {
+    frozenset(['febre', 'tosse', 'fadiga']): 'tuberculose',
+    frozenset(['dor de cabeça', 'confusão mental', 'visão turva']): 'AVC',
+    frozenset(['fadiga', 'perda de peso', 'suor noturno']): 'câncer',
+    frozenset(['dor no peito', 'falta de ar', 'inchaço']): 'doença cardíaca grave',
+    frozenset(['náusea', 'vômito', 'diarreia']): 'gastroenterite'
+}
 
-# Criar um dicionário para armazenar a base de conhecimento
+# Preprocess data
+data.dropna(inplace=True)
+data.drop_duplicates(inplace=True)
+
+# Create a knowledge base dictionary
 base_conhecimento = {}
 for index, row in data.iterrows():
-    sintoma = row['sintoma'].strip().lower()  # Normaliza para minúsculas
+    sintoma = row['sintoma'].strip().lower()
     doenca = row['doenca']
     tratamento = row['tratamento']
-    base_conhecimento[sintoma] = {'doenca': doenca, 'tratamento': tratamento}
+    if doenca not in base_conhecimento:
+        base_conhecimento[doenca] = {'sintomas': set(), 'tratamento': tratamento}
+    base_conhecimento[doenca]['sintomas'].add(sintoma)
 
-# Criar uma rede semântica usando NetworkX
-G = nx.Graph()
-for index, row in data.iterrows():
-    sintoma = row['sintoma'].strip().lower()  # Normaliza para minúsculas
-    doenca = row['doenca']
-    tratamento = row['tratamento']
-    
-    # Adicionar nós com atributos
-    G.add_node(sintoma, label='sintoma')
-    G.add_node(doenca, label='doenca')
-    G.add_node(tratamento, label='tratamento')
-    
-    # Adicionar arestas entre os nós com base nos relacionamentos
-    G.add_edge(sintoma, doenca)
-    G.add_edge(doenca, tratamento)
-
-# Função para diagnosticar com base nos sintomas selecionados
+# Function to diagnose based on selected symptoms
 def diagnosticar(sintomas):
-    diagnosticos_possiveis = set()
-    tratamentos_possiveis = set()
-    
-    for sintoma in sintomas:
-        if sintoma in G:  # Verificar se o nó do sintoma existe no grafo
-            vizinhos = list(G.neighbors(sintoma))
-            for doenca in vizinhos:
-                if G.nodes[doenca].get('label') == 'doenca':
-                    diagnosticos_possiveis.add(doenca)
-                    # Encontrar tratamentos ligados à doença
-                    for tratamento in G.neighbors(doenca):
-                        if G.nodes[tratamento].get('label') == 'tratamento':
-                            tratamentos_possiveis.add(tratamento)
-                            
-    return list(diagnosticos_possiveis), list(tratamentos_possiveis)
+    melhor_diagnostico = None
+    max_correspondencias = 0
 
-# Função para lidar com a seleção de sintomas
+    # Check for specific combinations first
+    for combinacao, doenca in doencas_especificas.items():
+        if combinacao.issubset(set(sintomas)):
+            melhor_diagnostico = doenca
+            break
+
+    # If no specific combination is found, look for the disease with the most matching symptoms
+    if not melhor_diagnostico:
+        for doenca, info in base_conhecimento.items():
+            correspondencias = len(info['sintomas'].intersection(sintomas))
+            if correspondencias > max_correspondencias:
+                max_correspondencias = correspondencias
+                melhor_diagnostico = doenca
+
+    # Get the corresponding treatment
+    if melhor_diagnostico:
+        tratamento = base_conhecimento[melhor_diagnostico]['tratamento']
+        return melhor_diagnostico, tratamento
+    else:
+        return None, None
+
+# Function to handle symptom selection
 def obter_diagnostico():
-    sintomas_selecionados = listbox.curselection()  # Obtém os índices dos sintomas selecionados
-    sintomas = [listbox.get(i) for i in sintomas_selecionados]  # Converte os índices em sintomas
+    sintomas_selecionados = listbox.curselection()
+    sintomas = [listbox.get(i) for i in sintomas_selecionados]
     
-    # Obter diagnóstico e tratamento com base nos sintomas
     diagnostico, tratamento = diagnosticar(sintomas)
     
-    # Gerar resposta com base no diagnóstico e tratamento
     if diagnostico and tratamento:
-                resposta = 'Com base nos seus sintomas, os possíveis diagnósticos são: {}\nOs possíveis tratamentos são: {}'.format(diagnostico, tratamento)
+        resposta = f'Diagnóstico mais provável: {diagnostico}\n\nTratamento recomendado: {tratamento}'
     else:
         resposta = 'Nenhum diagnóstico ou tratamento correspondente foi encontrado para os sintomas fornecidos.'
     
     messagebox.showinfo("Resultado", resposta)
 
-# Criar a interface gráfica
+# Create the graphical interface
 root = Tk()
 root.title("Sistema de Diagnóstico Médico")
+root.geometry("600x500")
 
-# Configurar a fonte
+# Configure fonts
 titulo_font = font.Font(family="Helvetica", size=16, weight="bold")
 texto_font = font.Font(family="Helvetica", size=12)
-texto_font2 = font.Font(family="Helvetica", size=10)  # Definindo uma fonte menor
+texto_font2 = font.Font(family="Helvetica", size=10)
 
-# Título
+# Title
 titulo_label = Label(root, text="Bem-vindo ao Sistema de Diagnóstico Médico", font=titulo_font)
 titulo_label.pack(pady=10)
 
-# Explicação
+# Explanation
 explicacao_label = Label(root, text="Selecione seus sintomas na lista abaixo e clique em 'Obter Diagnóstico'.", font=texto_font)
 explicacao_label.pack(pady=5)
 
-# Listbox para seleção de sintomas
-listbox = Listbox(root, selectmode='multiple', font=texto_font, width=50, height=10)
-for sintoma in base_conhecimento.keys():
-    listbox.insert('end', sintoma)  # Adiciona cada sintoma à Listbox
+# Frame for the Listbox and Scrollbar
+frame = Frame(root)
+frame.pack(pady=10)
 
-listbox.pack(pady=10)
+# Listbox for symptom selection
+listbox = Listbox(frame, selectmode='multiple', font=texto_font, width=50, height=10)
+for sintoma in sorted(set(symptom for info in base_conhecimento.values() for symptom in info['sintomas'])):
+    listbox.insert('end', sintoma)
 
-# Botão para obter o diagnóstico
+# Add a scrollbar
+scrollbar = Scrollbar(frame, orient="vertical", command=listbox.yview)
+listbox.config(yscrollcommand=scrollbar.set)
+scrollbar.pack(side='right', fill='y')
+listbox.pack(side='left', fill='both')
+
+# Button to get the diagnosis
 botao_diagnostico = Button(root, text="Obter Diagnóstico", command=obter_diagnostico, font=texto_font)
 botao_diagnostico.pack(pady=10)
 
-# Exemplo de uso de cor no texto
-informacao_label = Label(root, text="Nota: Este sistema é apenas informativo.", font=texto_font2, fg="red")  # Usando a cor vermelha
+# Information label
+informacao_label = Label(root, text="Nota: Este sistema é apenas informativo.", font=texto_font2, fg="red")
 informacao_label.pack(pady=5)
 
-# Iniciar o loop da interface gráfica
+# Start the GUI event loop
 root.mainloop()
