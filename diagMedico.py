@@ -5,32 +5,52 @@ from tkinter import Tk, Label, Listbox, Button, messagebox, font, Scrollbar, Fra
 
 nltk.download('punkt')
 
-# Load medical data into a pandas DataFrame
+# Load medical data into a pandas DataFrame with all symptoms, diseases, and treatments aligned
 data = pd.DataFrame({
     'sintoma': ['febre', 'tosse', 'dor de cabeça', 'dor de garganta', 'coriza',
                 'dor muscular', 'fadiga', 'dor no peito', 'falta de ar', 'tontura',
                 'suor noturno', 'perda de peso', 'inchaço', 'confusão mental', 'visão turva',
-                'náusea', 'vômito', 'diarreia', 'erupção cutânea', 'dificuldade para engolir'],
+                'náusea', 'vômito', 'diarreia', 'erupção cutânea', 'dificuldade para engolir',
+                'suor frio', 'sede excessiva', 'coceira', 'icterícia', 'ansiedade',
+                'palpitações', 'fraqueza muscular', 'manchas vermelhas', 'dor articular'],
     'doenca': ['gripe', 'gripe', 'enxaqueca', 'amigdalite', 'resfriado',
                'gripe', 'anemia', 'doença cardíaca', 'asma', 'vertigem',
                'tuberculose', 'câncer', 'doença renal', 'AVC', 'diabetes',
-               'gastroenterite', 'intoxicação alimentar', 'alergia', 'esofagite', 'faringite'],
+               'gastroenterite', 'intoxicação alimentar', 'alergia', 'esofagite', 'faringite',
+               'ataque cardíaco', 'diabetes descontrolada', 'alergia severa', 'hepatite viral', 'ataque de pânico',
+               'ataque cardíaco', 'hipotensão', 'zika vírus', 'zika vírus'],
     'tratamento': ['repouso e hidratação', 'xarope para tosse', 'analgésicos',
                    'antibióticos', 'descongestionantes', 'analgésicos',
-                   'suplementos de ferro', 'monitoramento cardíaco',
-                   'bombinha', 'medicamento para vertigem',
-                   'antibióticos', 'quimioterapia', 'diuréticos',
-                   'atendimento emergencial', 'controle de glicose',
-                   'hidratação e repouso', 'medicamentos antieméticos', 'antihistamínicos', 'inibidores de bomba de prótons', 'antibióticos']
+                   'suplementos de ferro', 'monitoramento cardíaco', 'bombinha',
+                   'medicamento para vertigem', 'antibióticos', 'quimioterapia',
+                   'diuréticos', 'atendimento emergencial', 'controle de glicose',
+                   'hidratação e repouso', 'medicamentos antieméticos', 'antihistamínicos',
+                   'inibidores de bomba de prótons', 'antibióticos',
+                   'atendimento emergencial', 'controle de glicose', 'antihistamínicos',
+                   'medicamentos antivirais', 'calmantes', 'atendimento emergencial',
+                   'suplementação de sódio', 'repouso e hidratação', 'analgésicos']
 })
 
-# Specific disease combinations
+# Adicionando doenças com combinações específicas de sintomas
 doencas_especificas = {
     frozenset(['febre', 'tosse', 'fadiga']): 'tuberculose',
     frozenset(['dor de cabeça', 'confusão mental', 'visão turva']): 'AVC',
     frozenset(['fadiga', 'perda de peso', 'suor noturno']): 'câncer',
     frozenset(['dor no peito', 'falta de ar', 'inchaço']): 'doença cardíaca grave',
-    frozenset(['náusea', 'vômito', 'diarreia']): 'gastroenterite'
+    frozenset(['náusea', 'vômito', 'diarreia']): 'gastroenterite',
+    frozenset(['febre', 'dor muscular', 'dor de cabeça']): 'dengue',
+    frozenset(['tosse', 'falta de ar', 'febre']): 'pneumonia',
+    frozenset(['dor de garganta', 'febre', 'dificuldade para engolir']): 'faringite estreptocócica',
+    frozenset(['dor de cabeça', 'tontura', 'fadiga']): 'hipoglicemia',
+    frozenset(['dor no peito', 'falta de ar', 'suor frio']): 'ataque cardíaco',
+    frozenset(['visão turva', 'fadiga', 'sede excessiva']): 'diabetes descontrolada',
+    frozenset(['erupção cutânea', 'coceira', 'inchaço']): 'alergia severa',
+    frozenset(['febre', 'náusea', 'icterícia']): 'hepatite viral',
+    frozenset(['dor muscular', 'fadiga', 'inchaço']): 'fibromialgia',
+    frozenset(['dor abdominal', 'vômito', 'diarreia']): 'apendicite',
+    frozenset(['dor no peito', 'ansiedade', 'palpitações']): 'ataque de pânico',
+    frozenset(['tontura', 'confusão mental', 'fraqueza muscular']): 'hipotensão',
+    frozenset(['febre', 'manchas vermelhas', 'dor articular']): 'zika vírus'
 }
 
 # Preprocess data
