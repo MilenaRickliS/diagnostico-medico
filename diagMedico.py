@@ -1,7 +1,7 @@
 import networkx as nx
 import pandas as pd
 import nltk
-from tkinter import Tk, Label, Listbox, Button, messagebox, font, Scrollbar, Frame
+from tkinter import Tk, Label, Listbox, Button, messagebox, font, Scrollbar, Frame, Menu
 
 nltk.download('punkt')
 
@@ -31,7 +31,7 @@ data = pd.DataFrame({
                    'suplementação de sódio', 'repouso e hidratação', 'analgésicos']
 })
 
-# Adicionando doenças com combinações específicas de sintomas
+# Specific disease combinations
 doencas_especificas = {
     frozenset(['febre', 'tosse', 'fadiga']): 'tuberculose',
     frozenset(['dor de cabeça', 'confusão mental', 'visão turva']): 'AVC',
@@ -96,8 +96,11 @@ def diagnosticar(sintomas):
 # Function to handle symptom selection
 def obter_diagnostico():
     sintomas_selecionados = listbox.curselection()
+    if not sintomas_selecionados:
+        messagebox.showwarning("Atenção", "Por favor, selecione pelo menos um sintoma.")
+        return
+
     sintomas = [listbox.get(i) for i in sintomas_selecionados]
-    
     diagnostico, tratamento = diagnosticar(sintomas)
     
     if diagnostico and tratamento:
@@ -107,26 +110,45 @@ def obter_diagnostico():
     
     messagebox.showinfo("Resultado", resposta)
 
+# Function to clear selection
+def limpar_selecao():
+    listbox.selection_clear(0, 'end')
+
+# Function to show information about the system
+def mostrar_sobre():
+    messagebox.showinfo("Sobre", "Sistema de Diagnóstico Médico v1.0\nDesenvolvido como um exemplo educacional.")
+
 # Create the graphical interface
 root = Tk()
 root.title("Sistema de Diagnóstico Médico")
 root.geometry("600x500")
+root.config(bg="lightgray")
 
 # Configure fonts
 titulo_font = font.Font(family="Helvetica", size=16, weight="bold")
 texto_font = font.Font(family="Helvetica", size=12)
 texto_font2 = font.Font(family="Helvetica", size=10)
 
+# Menu bar
+menu_bar = Menu(root)
+root.config(menu=menu_bar)
+
+ajuda_menu = Menu(menu_bar, tearoff=0)
+ajuda_menu.add_command(label="Sobre", command=mostrar_sobre)
+ajuda_menu.add_separator()
+ajuda_menu.add_command(label="Sair", command=root.quit)
+menu_bar.add_cascade(label="Ajuda", menu=ajuda_menu)
+
 # Title
-titulo_label = Label(root, text="Bem-vindo ao Sistema de Diagnóstico Médico", font=titulo_font)
+titulo_label = Label(root, text="Bem-vindo ao Sistema de Diagnóstico Médico", font=titulo_font, bg="lightgray")
 titulo_label.pack(pady=10)
 
 # Explanation
-explicacao_label = Label(root, text="Selecione seus sintomas na lista abaixo e clique em 'Obter Diagnóstico'.", font=texto_font)
+explicacao_label = Label(root, text="Selecione seus sintomas na lista abaixo e clique em 'Obter Diagnóstico'.", font=texto_font, bg="lightgray")
 explicacao_label.pack(pady=5)
 
 # Frame for the Listbox and Scrollbar
-frame = Frame(root)
+frame = Frame(root, bg="lightgray")
 frame.pack(pady=10)
 
 # Listbox for symptom selection
@@ -134,19 +156,26 @@ listbox = Listbox(frame, selectmode='multiple', font=texto_font, width=50, heigh
 for sintoma in sorted(set(symptom for info in base_conhecimento.values() for symptom in info['sintomas'])):
     listbox.insert('end', sintoma)
 
-# Add a scrollbar
+# Scrollbar
 scrollbar = Scrollbar(frame, orient="vertical", command=listbox.yview)
 listbox.config(yscrollcommand=scrollbar.set)
 scrollbar.pack(side='right', fill='y')
 listbox.pack(side='left', fill='both')
 
 # Button to get the diagnosis
-botao_diagnostico = Button(root, text="Obter Diagnóstico", command=obter_diagnostico, font=texto_font)
+botao_diagnostico = Button(root, text="Obter Diagnóstico", command=obter_diagnostico, font=texto_font, bg="blue", fg="white")
 botao_diagnostico.pack(pady=10)
 
+# Button to clear selection
+botao_limpar = Button(root, text="Limpar Seleção", command=limpar_selecao, font=texto_font, bg="gray", fg="white")
+botao_limpar.pack(pady=5)
+
 # Information label
-informacao_label = Label(root, text="Nota: Este sistema é apenas informativo.", font=texto_font2, fg="red")
+informacao_label = Label(root, text="Nota: Este sistema é apenas informativo.", font=texto_font2, fg="red", bg="lightgray")
+informacao_label.pack(pady=5)
+informacao_label = Label(root, text="Diante de qualquer um destes sintomas, consulte um médico!", font=texto_font2, fg="red", bg="lightgray")
 informacao_label.pack(pady=5)
 
 # Start the GUI event loop
 root.mainloop()
+
