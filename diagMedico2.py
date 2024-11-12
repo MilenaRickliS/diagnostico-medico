@@ -23,6 +23,17 @@ class DiagnosticoMedico:
             "perda_de_paladar": "Você perdeu o paladar?",
             "dor_articulacoes": "Você tem dor nas articulações?",
             "manchas_na_pele": "Você tem manchas na pele?",
+            "suor_noturno": "Você está tendo suor noturno?",
+            "linfadenopatia": "Você está com aumento dos gânglios linfáticos?",
+            "formigamento": "Você está sentindo formigamento nas extremidades?",
+            "rigidez_nucal": "Você está sentindo rigidez no pescoço?",
+            "expiracao_prolongada": "Você está tendo dificuldade ao expirar?",
+            "sibilo": "Você está sentindo um chiado no peito?",
+            "coceira": "Você está com coceira?",
+            "lesoes_escamosas": "Você tem lesões escamosas na pele?",
+            "inchaço_articular": "Você está com inchaço nas articulações?",
+            "rigidez_morning": "Você sente rigidez nas articulações pela manhã?",
+            "perda_de_peso": "Você está percebendo perda de peso?",
         }
 
         # Dicionário de diagnósticos baseados nos sintomas
@@ -40,6 +51,20 @@ class DiagnosticoMedico:
             "Zika": ["febre", "erupcao_cutanea", "fadiga", "dor_articulacoes", "manchas_na_pele"],
             "Chikungunya": ["febre", "dor_muscular", "dor_articulacoes", "fadiga"],
             "Malária": ["febre", "calafrios", "dor_cabeca", "fadiga", "dor_muscular"],
+            "Tuberculose": ["tosse", "dificuldade_respirar", "febre", "suor_noturno", "perda_de_peso"],
+            "Pneumonia": ["tosse", "dificuldade_respirar", "febre", "calafrios", "dor_peito"],
+            "Leptospirose": ["febre", "dor_cabeca", "fadiga", "dor_abdominal", "vômito"],
+            "Câncer de pulmão": ["tosse", "dificuldade_respirar", "febre", "perda_de_peso", "dor_torácica"],
+            "Asma": ["tosse", "dificuldade_respirar", "chiado_no_peito"],
+            "Doença pulmonar obstrutiva crônica (DPOC)": ["tosse", "dificuldade_respirar", "expiração_prolongada", "sibilo"],
+            "Brucelose": ["febre", "dor_muscular", "suores", "fadiga", "dor_abdominal"],
+            "Meningite": ["febre", "dor_cabeca", "rigidez_nucal", "nausea", "vomito"],
+            "Síndrome de Guillain-Barré": ["fraqueza_muscular", "dificuldade_respirar", "formigamento"],
+            "Mononucleose": ["febre", "dor_garganta", "linfadenopatia", "fadiga"],
+            "Doença de Lyme": ["erupcao_cutanea", "febre", "dor_cabeca", "fadiga", "dor_muscular"],
+            "Psoríase": ["erupcao_cutanea", "coceira", "lesões_escamosas"],
+            "Artrite reumatoide": ["dor_articulacoes", "inchaço_articular", "rigidez_morning"],
+            "HIV/AIDS": ["febre", "fadiga", "linfadenopatia", "perda_de_peso", "suores_noturnos"],
         }
 
         self.sintomas_presentes = []
@@ -73,6 +98,10 @@ class DiagnosticoMedico:
 
         self.nao_button = tk.Button(self.buttons_frame, text="Não", command=self.nao, width=10, bg="#f44336", fg="white", font=("Arial", 12, "bold"), borderwidth=0)
         self.nao_button.pack(side="right", padx=5, pady=5)
+
+        # Botão de Recomeçar
+        self.recomecar_button = tk.Button(self.buttons_frame, text="Limpar", command=self.recomeçar, width=10, bg="#2196F3", fg="white", font=("Arial", 12, "bold"), borderwidth=0)
+        self.recomecar_button.pack(side="right", padx=5, pady=5)
 
         # Exibir a primeira pergunta
         self.exibir_proxima_pergunta()
@@ -129,6 +158,7 @@ class DiagnosticoMedico:
             self.diagnostico_encontrado = True
         else:
             self.adicionar_mensagem("Nenhum diagnóstico possível encontrado com base nos sintomas.\n\nConsulte um médico para confirmação.", "sistema")
+            self.diagnostico_encontrado = True
 
     def obter_diagnostico(self):
         possiveis_diagnosticos = []
@@ -136,6 +166,19 @@ class DiagnosticoMedico:
             if all(sintoma in self.sintomas_presentes for sintoma in sintomas):
                 possiveis_diagnosticos.append(diagnostico)
         return possiveis_diagnosticos
+
+    def recomeçar(self):
+        # Zera as variáveis
+        self.sintomas_presentes = []
+        self.sintoma_atual = iter(self.sintomas.items())
+        self.diagnostico_encontrado = False
+
+        # Limpa a interface de mensagens
+        for widget in self.messages_container.winfo_children():
+            widget.destroy()
+
+        # Exibe a primeira pergunta novamente
+        self.exibir_proxima_pergunta()
 
 if __name__ == "__main__":
     root = tk.Tk()
