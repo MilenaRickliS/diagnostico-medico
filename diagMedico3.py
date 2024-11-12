@@ -50,6 +50,13 @@ class DiagnosticoMedico:
             "inchaço_articular": "Você está com inchaço nas articulações?",
             "rigidez_morning": "Você sente rigidez nas articulações pela manhã?",
             "perda_de_peso": "Você está percebendo perda de peso?",
+            "dor_urinaria": "Você sente dor ao urinar?",
+            "frequencia_urinaria": "Você tem necessidade frequente de urinar?",
+            "tontura": "Você está sentindo tontura?",
+            "aumento_sede": "Você está sentindo sede excessiva?",
+            "aumento_fome": "Você está sentindo fome excessiva?",
+            "inchaco": "Você está com inchaço nas articulações?",
+            "disturbios_sono": "Você está tendo distúrbios do sono?",
         }
 
     def definir_diagnosticos(self):
@@ -81,6 +88,11 @@ class DiagnosticoMedico:
             "Psoríase": {"erupcao_cutanea": 2, "coceira": 2, "lesoes_escamosas": 3},
             "Artrite reumatoide": {"dor_articulacoes": 2, "inchaço_articular": 2, "rigidez_morning": 3},
             "HIV/AIDS": {"febre": 2, "fadiga": 1, "linfadenopatia": 3, "perda_de_peso": 3},
+            "Infecção Urinária": {"dor_urinaria": 2, "frequencia_urinaria": 2, "dor_abdomen": 1},
+            "Hipertensão": {"dor_cabeca": 1, "tontura": 1, "falta_ar": 1},
+            "Diabetes Tipo 2": {"aumento_sede": 2, "aumento_fome": 2, "fadiga": 1, "perda_peso": 1},
+            "Artrite": {"dor_articulacoes": 2, "rigidez": 2, "inchaco": 1},
+            "Fibromialgia": {"dor_muscular": 2, "fadiga": 2, "disturbios_sono": 2},
         }
         
     def definir_dependencias_sintomas(self):
@@ -105,6 +117,13 @@ class DiagnosticoMedico:
             "calafrios": ["febre", "suor_noturno"],
             "perda_de_apetite": ["fadiga", "perda_de_peso"],
             "diarreia": ["vomito", "nausea"],
+            "dor_urinaria": ["frequencia_urinaria"],
+            "frequencia_urinaria": ["dor_urinaria"],
+            "tontura": ["fadiga", "dificuldade_respirar"],
+            "aumento_sede": ["aumento_fome"],
+            "aumento_fome": ["aumento_sede"],
+            "inchaco": ["dor_articulacoes"],
+            "disturbios_sono": ["fadiga"],
         }
     def definir_detalhes_diagnosticos(self):
     # Detalhes dos diagnósticos, incluindo sintomas típicos, causas e recomendações
@@ -243,6 +262,31 @@ class DiagnosticoMedico:
                 "sintomas": "Febre, fadiga, linfadenopatia, perda de peso.",
                 "causas": "Vírus da imunodeficiência humana, transmitido por fluidos corporais.",
                 "recomendacao": "Tratamento antirretroviral contínuo. Consulte um médico para acompanhamento."
+            },
+            "Infecção Urinária": {
+            "sintomas": "Dor ao urinar, necessidade frequente de urinar, dor na parte inferior do abdômen.",
+            "causas": "Bactérias que entram no trato urinário.",
+            "recomendacao": "Aumento da ingestão de líquidos e consulta médica para possível tratamento com antibióticos."
+            },
+            "Hipertensão": {
+                "sintomas": "Dor de cabeça, tontura, falta de ar, visão embaçada.",
+                "causas": "Estilo de vida, genética, dieta alta em sódio.",
+                "recomendacao": "Mudanças na dieta, exercícios regulares e consulta médica para monitoramento."
+            },
+            "Diabetes Tipo 2": {
+                "sintomas": "Aumento da sede, aumento da fome, fadiga, perda de peso inexplicada.",
+                "causas": "Resistência à insulina, fatores genéticos e estilo de vida.",
+                "recomendacao": "Controle da dieta, exercícios regulares e consulta médica para monitoramento da glicose."
+            },
+            "Artrite": {
+                "sintomas": "Dor nas articulações, rigidez, inchaço.",
+                "causas": "Inflamação das articulações, pode ser causada por várias condições.",
+                "recomendacao": "Fisioterapia, medicamentos anti-inflamatórios e consulta médica para avaliação."
+            },
+            "Fibromialgia": {
+                "sintomas": "Dor muscular generalizada, fadiga, distúrbios do sono.",
+                "causas": "A causa exata é desconhecida, mas pode estar relacionada a alterações na forma como o cérebro processa a dor.",
+                "recomendacao": "Tratamento com medicamentos, terapia física e técnicas de gerenciamento de estresse."
             },
         }
 
