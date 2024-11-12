@@ -362,7 +362,7 @@ class DiagnosticoMedico:
                     self.sintoma_chave, pergunta = next(self.sintoma_atual)
                     if self.sintoma_chave not in self.sintomas_ja_perguntados:  # Verifica se já foi perguntado
                         self.adicionar_mensagem(pergunta, "sistema")
-                        self.sintomas_ja_perguntados.add(self.sintoma_chave)  # Adiciona ao conjunto de sintomas perguntados
+                        self.sintomas_ja_perguntados.add(self.sintoma_chave)  
                         break
             except StopIteration:
                 self.sugerir_diagnostico()

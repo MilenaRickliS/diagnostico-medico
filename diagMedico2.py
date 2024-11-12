@@ -60,7 +60,7 @@ class DiagnosticoMedico:
             "Infecção Alimentar": ["nausea", "vomito", "diarreia", "dor_abdominal"],
             "Sinusite": ["dor_cabeca", "dor_garganta", "tosse", "fadiga", "congestao_nasal"],
             "Dengue": ["febre", "dor_muscular", "calafrios", "fadiga", "erupcao_cutanea"],
-                        "Hepatite": ["fadiga", "nausea", "perda_de_apetite", "dor_abdominal"],
+            "Hepatite": ["fadiga", "nausea", "perda_de_apetite", "dor_abdominal"],
             "Apendicite": ["dor_abdominal", "nausea", "vomito"],
             "Zika": ["febre", "erupcao_cutanea", "fadiga", "dor_articulacoes", "manchas_na_pele"],
             "Chikungunya": ["febre", "dor_muscular", "dor_articulacoes", "fadiga"],
