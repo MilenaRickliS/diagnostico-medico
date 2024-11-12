@@ -9,7 +9,7 @@ class DiagnosticoMedico:
         self.sintomas_presentes = []
         self.sintoma_atual = iter(self.sintomas.items())
         self.root = root
-        self.root.title("Diagnóstico Médico - Estilo WhatsApp")
+        self.root.title("IA - Diagnóstico Médico")
         self.diagnostico_encontrado = False  
 
         self.configurar_interface()
