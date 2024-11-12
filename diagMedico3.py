@@ -5,8 +5,10 @@ class DiagnosticoMedico:
     def __init__(self, root):
         self.sintomas = self.definir_sintomas()
         self.diagnosticos = self.definir_diagnosticos()
+        self.sintoma_dependencias = self.definir_dependencias_sintomas()
         
         self.sintomas_presentes = []
+        self.sintoma_prioritarios = []
         self.sintoma_atual = iter(self.sintomas.items())
         self.root = root
         self.root.title("Diagnóstico Médico - Estilo WhatsApp")
@@ -52,33 +54,57 @@ class DiagnosticoMedico:
 
     def definir_diagnosticos(self):
         return {
-            "Gripe": ["febre", "tosse", "dor_cabeca", "fadiga", "calafrios"],
-            "COVID-19": ["febre", "tosse", "dificuldade_respirar", "fadiga", "perda_de_paladar"],
-            "Resfriado": ["tosse", "dor_garganta", "fadiga", "congestao_nasal"],
-            "Gastrite": ["nausea", "dor_cabeca", "dor_abdominal"],
-            "Alergia": ["erupcao_cutanea", "tosse", "sudorese", "congestao_nasal"],
-            "Infecção Alimentar": ["nausea", "vomito", "diarreia", "dor_abdominal"],
-            "Sinusite": ["dor_cabeca", "dor_garganta", "tosse", "fadiga", "congestao_nasal"],
-            "Dengue": ["febre", "dor_muscular", "calafrios", "fadiga", "erupcao_cutanea"],
-                        "Hepatite": ["fadiga", "nausea", "perda_de_apetite", "dor_abdominal"],
-            "Apendicite": ["dor_abdominal", "nausea", "vomito"],
-            "Zika": ["febre", "erupcao_cutanea", "fadiga", "dor_articulacoes", "manchas_na_pele"],
-            "Chikungunya": ["febre", "dor_muscular", "dor_articulacoes", "fadiga"],
-            "Malária": ["febre", "calafrios", "dor_cabeca", "fadiga", "dor_muscular"],
-            "Tuberculose": ["tosse", "dificuldade_respirar", "febre", "suor_noturno", "perda_de_peso"],
-            "Pneumonia": ["tosse", "dificuldade_respirar", "febre", "calafrios", "dor_abdominal"],
-            "Leptospirose": ["febre", "dor_cabeca", "fadiga", "dor_abdominal", "vomito"],
-            "Câncer de pulmão": ["tosse", "dificuldade_respirar", "febre", "perda_de_peso"],
-            "Asma": ["tosse", "dificuldade_respirar", "sibilo"],
-            "DPOC": ["tosse", "dificuldade_respirar", "expiracao_prolongada", "sibilo"],
-            "Brucelose": ["febre", "dor_muscular", "suor", "fadiga", "dor_abdominal"],
-            "Meningite": ["febre", "dor_cabeca", "rigidez_nucal", "nausea", "vomito"],
-            "Síndrome de Guillain-Barré": ["fraqueza_muscular", "dificuldade_respirar", "formigamento"],
-            "Mononucleose": ["febre", "dor_garganta", "linfadenopatia", "fadiga"],
-            "Doença de Lyme": ["erupcao_cutanea", "febre", "dor_cabeca", "fadiga", "dor_muscular"],
-            "Psoríase": ["erupcao_cutanea", "coceira", "lesoes_escamosas"],
-            "Artrite reumatoide": ["dor_articulacoes", "inchaço_articular", "rigidez_morning"],
-            "HIV/AIDS": ["febre", "fadiga", "linfadenopatia", "perda_de_peso"],
+            "Gripe": {"febre": 2, "tosse": 2, "dor_cabeca": 1, "fadiga": 1, "calafrios": 2},
+            "COVID-19": {"febre": 2, "tosse": 2, "dificuldade_respirar": 3, "fadiga": 1, "perda_de_paladar": 3},
+            "Resfriado": {"tosse": 2, "dor_garganta": 2, "fadiga": 1, "congestao_nasal": 2},
+            "Gastrite": {"nausea": 2, "dor_cabeca": 1, "dor_abdominal": 3},
+            "Alergia": {"erupcao_cutanea": 2, "tosse": 2, "sudorese": 1, "congestao_nasal": 2},
+            "Infecção Alimentar": {"nausea": 2, "vomito": 3, "diarreia": 3, "dor_abdominal": 3},
+            "Sinusite": {"dor_cabeca": 1, "dor_garganta": 2, "tosse": 2, "fadiga": 1, "congestao_nasal": 2},
+            "Dengue": {"febre": 2, "dor_muscular": 2, "calafrios": 2, "fadiga": 1, "erupcao_cutanea": 2},
+            "Hepatite": {"fadiga": 1, "nausea": 2, "perda_de_apetite": 3, "dor_abdominal": 3},
+            "Apendicite": {"dor_abdominal": 3, "nausea": 2, "vomito": 3},
+            "Zika": {"febre": 2, "erupcao_cutanea": 2, "fadiga": 1, "dor_articulacoes": 2, "manchas_na_pele": 3},
+            "Chikungunya": {"febre": 2, "dor_muscular": 2, "dor_articulacoes": 2, "fadiga": 1},
+            "Malária": {"febre": 2, "calafrios": 2, "dor_cabeca": 1, "fadiga": 1, "dor_muscular": 2},
+            "Tuberculose": {"tosse": 2, "dificuldade_respirar": 3, "febre": 2, "suor_noturno": 2, "perda_de_peso": 3},
+            "Pneumonia": {"tosse": 2, "dificuldade_respirar": 3, "febre": 2, "calafrios": 2, "dor_abdominal": 3},
+            "Leptospirose": {"febre": 2, "dor_cabeca": 1, "fadiga": 1, "dor_abdominal": 3, "vomito": 3},
+            "Câncer de pulmão": {"tosse": 2, "dificuldade_respirar": 3, "febre": 2, "perda_de_peso": 3},
+            "Asma": {"tosse": 2, "dificuldade_respirar": 3, "sibilo": 3},
+            "DPOC": {"tosse": 2, "dificuldade_respirar": 3, "expiracao_prolongada": 3, "sibilo": 3},
+            "Brucelose": {"febre": 2, "dor_muscular": 2, "sudorese": 2, "fadiga": 1, "dor_abdominal": 3},
+            "Meningite": {"febre": 2, "dor_cabeca": 1, "rigidez_nucal": 3, "nausea": 2, "vomito": 3},
+            "Síndrome de Guillain-Barré": {"fraqueza_muscular": 3, "dificuldade_respirar": 3, "formigamento": 3},
+            "Mononucleose": {"febre": 2, "dor_garganta": 2, "linfadenopatia": 3, "fadiga": 1},
+            "Doença de Lyme": {"erupcao_cutanea": 2, "febre": 2, "dor_cabeca": 1, "fadiga": 1, "dor_muscular": 2},
+            "Psoríase": {"erupcao_cutanea": 2, "coceira": 2, "lesoes_escamosas": 3},
+            "Artrite reumatoide": {"dor_articulacoes": 2, "inchaço_articular": 2, "rigidez_morning": 3},
+            "HIV/AIDS": {"febre": 2, "fadiga": 1, "linfadenopatia": 3, "perda_de_peso": 3},
+        }
+        
+    def definir_dependencias_sintomas(self):
+        return {
+            "febre": ["calafrios", "suor_noturno", "fadiga"],
+            "tosse": ["dificuldade_respirar", "congestao_nasal", "dor_garganta"],
+            "dor_abdominal": ["vomito", "diarreia", "nausea"],
+            "dificuldade_respirar": ["sibilo", "expiracao_prolongada"],
+            "fadiga": ["perda_de_apetite", "perda_de_peso"],
+            "nausea": ["vomito", "diarreia"],
+            "erupcao_cutanea": ["coceira", "manchas_na_pele"],
+            "dor_muscular": ["fadiga", "calafrios"],
+            "linfadenopatia": ["febre", "fadiga"],
+            "rigidez_nucal": ["dor_cabeca", "nausea"],
+            "sibilo": ["dificuldade_respirar", "tosse"],
+            "coceira": ["erupcao_cutanea", "lesoes_escamosas"],
+            "inchaço_articular": ["dor_articulacoes", "rigidez_morning"],
+            "perda_de_paladar": ["fadiga", "nausea"],
+            "suor_noturno": ["febre", "perda_de_peso"],
+            "rigidez_morning": ["dor_articulacoes", "inchaço_articular"],
+            "formigamento": ["fraqueza_muscular", "dificuldade_respirar"],
+            "calafrios": ["febre", "suor_noturno"],
+            "perda_de_apetite": ["fadiga", "perda_de_peso"],
+            "diarreia": ["vomito", "nausea"],
         }
     def definir_detalhes_diagnosticos(self):
     # Detalhes dos diagnósticos, incluindo sintomas típicos, causas e recomendações
@@ -220,6 +246,8 @@ class DiagnosticoMedico:
             },
         }
 
+
+
     def configurar_interface(self):
         self.messages_frame = tk.Frame(self.root, bg="#f0f0f0")
         self.messages_frame.pack(padx=10, pady=10, fill="both", expand=True)
@@ -256,26 +284,47 @@ class DiagnosticoMedico:
     def adicionar_mensagem(self, texto, tipo="sistema"):
         cor_fundo = "#DCF8C6" if tipo == "usuario" else "#ECECEC"
         alinhamento = "e" if tipo == "usuario" else "w"
-        msg_label = tk.Label(self.messages_container, text=texto, bg=cor_fundo, fg="black", anchor=alinhamento,
-                             padx=10, pady=5, wraplength=300, justify="left" if tipo == "sistema" else "right",
-                             font=("Arial", 10))
+        msg_label = tk.Label(self.messages_container, text="", bg=cor_fundo, fg="black", anchor=alinhamento,
+                            padx=10, pady=5, wraplength=300, justify="left" if tipo == "sistema" else "right",
+                            font=("Arial", 10))
         msg_label.pack(anchor=alinhamento, pady=2, padx=5)
+
+        def digitar_animacao(index=0):
+            if index < len(texto):
+                msg_label.config(text=msg_label.cget("text") + texto[index])
+                self.root.after(50, lambda: digitar_animacao(index + 1))  # Ajuste a velocidade aqui
+            else:
+                self.canvas.yview_moveto(1)  # Rola para baixo ao final
+
+        digitar_animacao()
         self.root.update_idletasks()
-        self.canvas.yview_moveto(1)
+        self.canvas.yview_moveto(1)  # Rola automaticamente para o fim
+ 
 
     def exibir_proxima_pergunta(self):
         if self.diagnostico_encontrado:
             return
 
-        try:
-            self.sintoma_chave, pergunta = next(self.sintoma_atual)
+        if self.sintoma_prioritarios:
+            self.sintoma_chave = self.sintoma_prioritarios.pop(0)
+            pergunta = self.sintomas[self.sintoma_chave]
             self.adicionar_mensagem(pergunta, "sistema")
-        except StopIteration:
-            self.sugerir_diagnostico()
+        else:
+            try:
+                self.sintoma_chave, pergunta = next(self.sintoma_atual)
+                self.adicionar_mensagem(pergunta, "sistema")
+            except StopIteration:
+                self.sugerir_diagnostico()
 
     def sim(self):
         self.sintomas_presentes.append(self.sintoma_chave)
         self.adicionar_mensagem("Sim", "usuario")
+
+        sintomas_relacionados = self.sintoma_dependencias.get(self.sintoma_chave, [])
+        for sintoma in sintomas_relacionados:
+            if sintoma not in self.sintomas_presentes and sintoma not in self.sintoma_prioritarios:
+                self.sintoma_prioritarios.append(sintoma)
+
         self.verificar_diagnostico_automatico()
         self.exibir_proxima_pergunta()
 
@@ -318,16 +367,38 @@ class DiagnosticoMedico:
         if possiveis_diagnosticos:
             diagnosticos_str = "\n".join(f"- {d}" for d in possiveis_diagnosticos)
             self.adicionar_mensagem(f"Diagnóstico Final:\n{diagnosticos_str}\n\nConsulte um médico para confirmação.", "sistema")
+
+            # Acessando os detalhes do diagnóstico corretamente
+            detalhes_diagnosticos = self.definir_detalhes_diagnosticos()
+
+            for diagnostico in possiveis_diagnosticos:
+                detalhes = detalhes_diagnosticos.get(diagnostico, {})
+                sintomas = detalhes.get("sintomas", "Informações não disponíveis.")
+                causas = detalhes.get("causas", "Informações não disponíveis.")
+                recomendacao = detalhes.get("recomendacao", "Consulte um médico para mais informações.")
+
+                self.adicionar_mensagem(f"\nDetalhes sobre {diagnostico}:\n"
+                                        f"Sintomas típicos: {sintomas}\n"
+                                        f"Causas: {causas}\n"
+                                        f"Recomendações: {recomendacao}\n", "sistema")
+
+            # Link para buscar mais informações ou consultas médicas
+            self.adicionar_mensagem("\nPara mais informações e para confirmação do diagnóstico, consulte um médico. "
+                                    "Você pode buscar ajuda médica em um hospital próximo ou em telemedicina.", "sistema")
+
         else:
             self.adicionar_mensagem("Nenhum diagnóstico possível encontrado com base nos sintomas.\n\nConsulte um médico para confirmação.", "sistema")
+        
         self.diagnostico_encontrado = True
 
+
     def obter_diagnostico(self):
-        possiveis_diagnosticos = []
+        pontuacao_diagnosticos = {}
         for diagnostico, sintomas in self.diagnosticos.items():
-            if all(sintoma in self.sintomas_presentes for sintoma in sintomas):
-                possiveis_diagnosticos.append(diagnostico)
-        return possiveis_diagnosticos
+            pontuacao = sum(peso for sintoma, peso in sintomas.items() if sintoma in self.sintomas_presentes)
+            if pontuacao >= 5:  
+                pontuacao_diagnosticos[diagnostico] = pontuacao
+        return sorted(pontuacao_diagnosticos, key=pontuacao_diagnosticos.get, reverse=True)
 
     def recomeçar(self):
         self.sintomas_presentes = []
@@ -343,7 +414,7 @@ class DiagnosticoMedico:
 
 if __name__ == "__main__":
     root = tk.Tk()
-    root.geometry("400x600")  
+    root.geometry("600x600")  
     root.configure(bg="#f0f0f0")
     app = DiagnosticoMedico(root)
-    root.mainloop()
+    root.mainloop() 
