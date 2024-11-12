@@ -11,8 +11,9 @@ class DiagnosticoMedico:
         self.sintoma_prioritarios = []
         self.sintoma_atual = iter(self.sintomas.items())
         self.root = root
-        self.root.title("Diagnóstico Médico - Estilo WhatsApp")
-        self.diagnostico_encontrado = False  
+        self.root.title("IA - Diagnóstico Médico")
+        self.diagnostico_encontrado = False
+        self.sintomas_ja_perguntados = set()   
 
         self.configurar_interface()
         self.exibir_mensagem_inicial()
@@ -57,6 +58,7 @@ class DiagnosticoMedico:
             "aumento_fome": "Você está sentindo fome excessiva?",
             "inchaco": "Você está com inchaço nas articulações?",
             "disturbios_sono": "Você está tendo distúrbios do sono?",
+            "fraqueza_muscular": "Você está sentindo uma fraqueza muscular?"
         }
 
     def definir_diagnosticos(self):
@@ -64,13 +66,13 @@ class DiagnosticoMedico:
             "Gripe": {"febre": 2, "tosse": 2, "dor_cabeca": 1, "fadiga": 1, "calafrios": 2},
             "COVID-19": {"febre": 2, "tosse": 2, "dificuldade_respirar": 3, "fadiga": 1, "perda_de_paladar": 3},
             "Resfriado": {"tosse": 2, "dor_garganta": 2, "fadiga": 1, "congestao_nasal": 2},
-            "Gastrite": {"nausea": 2, "dor_cabeca": 1, "dor_abdominal": 3},
+            "Gastrite": {"nausea": 2, "dor_cabeca": 1, "dor_abdominal": 3, "perda_de_apetite": 3, "vomito": 3,},
             "Alergia": {"erupcao_cutanea": 2, "tosse": 2, "sudorese": 1, "congestao_nasal": 2},
             "Infecção Alimentar": {"nausea": 2, "vomito": 3, "diarreia": 3, "dor_abdominal": 3},
             "Sinusite": {"dor_cabeca": 1, "dor_garganta": 2, "tosse": 2, "fadiga": 1, "congestao_nasal": 2},
             "Dengue": {"febre": 2, "dor_muscular": 2, "calafrios": 2, "fadiga": 1, "erupcao_cutanea": 2},
             "Hepatite": {"fadiga": 1, "nausea": 2, "perda_de_apetite": 3, "dor_abdominal": 3},
-            "Apendicite": {"dor_abdominal": 3, "nausea": 2, "vomito": 3},
+            "Apendicite": {"febre": 2, "dor_abdominal": 3, "nausea": 2, "vomito": 3, "perda_de_apetite": 3,},
             "Zika": {"febre": 2, "erupcao_cutanea": 2, "fadiga": 1, "dor_articulacoes": 2, "manchas_na_pele": 3},
             "Chikungunya": {"febre": 2, "dor_muscular": 2, "dor_articulacoes": 2, "fadiga": 1},
             "Malária": {"febre": 2, "calafrios": 2, "dor_cabeca": 1, "fadiga": 1, "dor_muscular": 2},
@@ -78,18 +80,18 @@ class DiagnosticoMedico:
             "Pneumonia": {"tosse": 2, "dificuldade_respirar": 3, "febre": 2, "calafrios": 2, "dor_abdominal": 3},
             "Leptospirose": {"febre": 2, "dor_cabeca": 1, "fadiga": 1, "dor_abdominal": 3, "vomito": 3},
             "Câncer de pulmão": {"tosse": 2, "dificuldade_respirar": 3, "febre": 2, "perda_de_peso": 3},
-            "Asma": {"tosse": 2, "dificuldade_respirar": 3, "sibilo": 3},
+            "Asma": {"tosse": 2, "dificuldade_respirar": 3, "sibilo": 3, "dor_muscular": 2,},
             "DPOC": {"tosse": 2, "dificuldade_respirar": 3, "expiracao_prolongada": 3, "sibilo": 3},
             "Brucelose": {"febre": 2, "dor_muscular": 2, "sudorese": 2, "fadiga": 1, "dor_abdominal": 3},
             "Meningite": {"febre": 2, "dor_cabeca": 1, "rigidez_nucal": 3, "nausea": 2, "vomito": 3},
-            "Síndrome de Guillain-Barré": {"fraqueza_muscular": 3, "dificuldade_respirar": 3, "formigamento": 3},
+            "Síndrome de Guillain-Barré": {"fraqueza_muscular": 3, "dificuldade_respirar": 3, "formigamento": 3, "dor_muscular": 2,},
             "Mononucleose": {"febre": 2, "dor_garganta": 2, "linfadenopatia": 3, "fadiga": 1},
             "Doença de Lyme": {"erupcao_cutanea": 2, "febre": 2, "dor_cabeca": 1, "fadiga": 1, "dor_muscular": 2},
-            "Psoríase": {"erupcao_cutanea": 2, "coceira": 2, "lesoes_escamosas": 3},
-            "Artrite reumatoide": {"dor_articulacoes": 2, "inchaço_articular": 2, "rigidez_morning": 3},
+            "Psoríase": {"erupcao_cutanea": 2, "coceira": 2, "lesoes_escamosas": 3, "inchaço_articular": 2,},
+            "Artrite reumatoide": {"dor_articulacoes": 2, "inchaço_articular": 2, "rigidez_morning": 3, "fadiga": 1,},
             "HIV/AIDS": {"febre": 2, "fadiga": 1, "linfadenopatia": 3, "perda_de_peso": 3},
             "Infecção Urinária": {"dor_urinaria": 2, "frequencia_urinaria": 2, "dor_abdomen": 1},
-            "Hipertensão": {"dor_cabeca": 1, "tontura": 1, "falta_ar": 1},
+            "Hipertensão": {"dor_cabeca": 1, "tontura": 1, "falta_ar": 1, "dificuldade_respirar": 3,},
             "Diabetes Tipo 2": {"aumento_sede": 2, "aumento_fome": 2, "fadiga": 1, "perda_peso": 1},
             "Artrite": {"dor_articulacoes": 2, "rigidez": 2, "inchaco": 1},
             "Fibromialgia": {"dor_muscular": 2, "fadiga": 2, "disturbios_sono": 2},
@@ -353,10 +355,15 @@ class DiagnosticoMedico:
             self.sintoma_chave = self.sintoma_prioritarios.pop(0)
             pergunta = self.sintomas[self.sintoma_chave]
             self.adicionar_mensagem(pergunta, "sistema")
+            self.sintomas_ja_perguntados.add(self.sintoma_chave)
         else:
             try:
-                self.sintoma_chave, pergunta = next(self.sintoma_atual)
-                self.adicionar_mensagem(pergunta, "sistema")
+                while True:
+                    self.sintoma_chave, pergunta = next(self.sintoma_atual)
+                    if self.sintoma_chave not in self.sintomas_ja_perguntados:  # Verifica se já foi perguntado
+                        self.adicionar_mensagem(pergunta, "sistema")
+                        self.sintomas_ja_perguntados.add(self.sintoma_chave)  # Adiciona ao conjunto de sintomas perguntados
+                        break
             except StopIteration:
                 self.sugerir_diagnostico()
 
@@ -440,7 +447,7 @@ class DiagnosticoMedico:
         pontuacao_diagnosticos = {}
         for diagnostico, sintomas in self.diagnosticos.items():
             pontuacao = sum(peso for sintoma, peso in sintomas.items() if sintoma in self.sintomas_presentes)
-            if pontuacao >= 5:  
+            if pontuacao >= 7:  
                 pontuacao_diagnosticos[diagnostico] = pontuacao
         return sorted(pontuacao_diagnosticos, key=pontuacao_diagnosticos.get, reverse=True)
 
