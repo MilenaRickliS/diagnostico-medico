@@ -1,5 +1,4 @@
 import tkinter as tk
-import time
 from datetime import datetime
 
 class DiagnosticoMedico:
@@ -317,6 +316,7 @@ class DiagnosticoMedico:
         
         self.label_hora = tk.Label(self.root, font=("Arial black", 18), bg="#f0f0f0")
         self.label_hora.pack(pady=5)
+        
 
     def exibir_mensagem_inicial(self):
         self.adicionar_mensagem("Bem-vindo ao Diagnóstico Médico!\nResponda às perguntas para encontrar possíveis diagnósticos.", "sistema")
@@ -399,7 +399,8 @@ class DiagnosticoMedico:
                                         f"Sintomas típicos: {sintomas}\n"
                                         f"Causas: {causas}\n"
                                         f"Recomendações: {recomendacao}\n", "sistema")
-
+            
+            
             # Link para buscar mais informações ou consultas médicas
             self.adicionar_mensagem("\nPara mais informações e para confirmação do diagnóstico, consulte um médico. "
                                     "Você pode buscar ajuda médica em um hospital próximo ou em telemedicina.", "sistema")
@@ -461,6 +462,8 @@ class DiagnosticoMedico:
         hora_atual = agora.strftime("%H:%M:%S")
         self.label_hora.config(text=hora_atual)
         self.label_hora.after(1000, self.atualizar_hora)
+    
+    
 
 if __name__ == "__main__":
     root = tk.Tk()
