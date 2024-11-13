@@ -347,11 +347,11 @@ class DiagnosticoMedico:
                 msg_label.config(text=msg_label.cget("text") + texto[index])
                 self.root.after(50, lambda: digitar_animacao(index + 1))  # Ajuste a velocidade aqui
             else:
-                self.canvas.yview_moveto(1)  # Rola para baixo ao final
+                self.canvas.yview_moveto(1)  
 
         digitar_animacao()
         self.root.update_idletasks()
-        self.canvas.yview_moveto(1)  # Rola automaticamente para o fim
+        self.canvas.yview_moveto(1)  
 
     def exibir_proxima_pergunta(self):
         if self.diagnostico_encontrado:
@@ -382,7 +382,7 @@ class DiagnosticoMedico:
             if sintoma not in self.sintomas_presentes and sintoma not in self.sintoma_prioritarios:
                 self.sintoma_prioritarios.append(sintoma)
 
-       # self.verificar_diagnostico_automatico()
+        self.verificar_diagnostico_automatico()
         self.exibir_proxima_pergunta()
 
     def nao(self):
@@ -393,7 +393,7 @@ class DiagnosticoMedico:
         possiveis_diagnosticos = self.obter_diagnostico()
         if possiveis_diagnosticos:
             diagnosticos_str = "\n".join(f"- {d}" for d in possiveis_diagnosticos)
-            self.adicionar_mensagem(f"Possíveis diagnósticos:\n{diagnosticos_str}\nConsulte um médico para confirmação.", "sistema")
+            self.adicionar_mensagem(f"Possíveis diagnósticos:\n{diagnosticos_str}\nVamos confirmar o diagnóstico. Responda mais algumas perguntas:", "sistema")
 
     def sugerir_diagnostico(self):
         possiveis_diagnosticos = self.obter_diagnostico()

@@ -1,5 +1,6 @@
 import tkinter as tk
 import time
+from datetime import datetime
 
 class DiagnosticoMedico:
     def __init__(self, root):
@@ -18,6 +19,7 @@ class DiagnosticoMedico:
         self.configurar_interface()
         self.exibir_mensagem_inicial()
         self.exibir_proxima_pergunta()
+        self.atualizar_hora() 
 
     def definir_sintomas(self):
         return {
@@ -58,7 +60,8 @@ class DiagnosticoMedico:
             "aumento_fome": "Você está sentindo fome excessiva?",
             "inchaco": "Você está com inchaço nas articulações?",
             "disturbios_sono": "Você está tendo distúrbios do sono?",
-            "fraqueza_muscular": "Você está sentindo uma fraqueza muscular?"
+            "fraqueza_muscular": "Você está sentindo uma fraqueza muscular?",
+            "cheiro_urina": "Você percebeu um cheiro forte na urina?"
         }
 
     def definir_diagnosticos(self):
@@ -90,10 +93,8 @@ class DiagnosticoMedico:
             "Psoríase": {"erupcao_cutanea": 2, "coceira": 2, "lesoes_escamosas": 3, "inchaço_articular": 2,},
             "Artrite reumatoide": {"dor_articulacoes": 2, "inchaço_articular": 2, "rigidez_morning": 3, "fadiga": 1,},
             "HIV/AIDS": {"febre": 2, "fadiga": 1, "linfadenopatia": 3, "perda_de_peso": 3},
-            "Infecção Urinária": {"dor_urinaria": 2, "frequencia_urinaria": 2, "dor_abdomen": 1},
-            "Hipertensão": {"dor_cabeca": 1, "tontura": 1, "falta_ar": 1, "dificuldade_respirar": 3,},
-            "Diabetes Tipo 2": {"aumento_sede": 2, "aumento_fome": 2, "fadiga": 1, "perda_peso": 1},
-            "Artrite": {"dor_articulacoes": 2, "rigidez": 2, "inchaco": 1},
+            "Infecção Urinária": {"dor_urinaria": 2, "frequencia_urinaria": 2, "cheiro_urina": 1, "coceira": 2,},
+            "Diabetes Tipo 2": {"aumento_sede": 2, "aumento_fome": 2, "fadiga": 1, "tontura": 1, "perda_peso": 1},
             "Fibromialgia": {"dor_muscular": 2, "fadiga": 2, "disturbios_sono": 2},
         }
         
@@ -270,20 +271,10 @@ class DiagnosticoMedico:
             "causas": "Bactérias que entram no trato urinário.",
             "recomendacao": "Aumento da ingestão de líquidos e consulta médica para possível tratamento com antibióticos."
             },
-            "Hipertensão": {
-                "sintomas": "Dor de cabeça, tontura, falta de ar, visão embaçada.",
-                "causas": "Estilo de vida, genética, dieta alta em sódio.",
-                "recomendacao": "Mudanças na dieta, exercícios regulares e consulta médica para monitoramento."
-            },
             "Diabetes Tipo 2": {
                 "sintomas": "Aumento da sede, aumento da fome, fadiga, perda de peso inexplicada.",
                 "causas": "Resistência à insulina, fatores genéticos e estilo de vida.",
                 "recomendacao": "Controle da dieta, exercícios regulares e consulta médica para monitoramento da glicose."
-            },
-            "Artrite": {
-                "sintomas": "Dor nas articulações, rigidez, inchaço.",
-                "causas": "Inflamação das articulações, pode ser causada por várias condições.",
-                "recomendacao": "Fisioterapia, medicamentos anti-inflamatórios e consulta médica para avaliação."
             },
             "Fibromialgia": {
                 "sintomas": "Dor muscular generalizada, fadiga, distúrbios do sono.",
@@ -323,6 +314,9 @@ class DiagnosticoMedico:
 
         self.sair_button = tk.Button(self.buttons_frame, text="Sair", command=self.root.quit, width=10, bg="#FF5722", fg="white", font=("Arial", 12, "bold"), borderwidth=0)
         self.sair_button.pack(side="right", padx=5, pady=5)
+        
+        self.label_hora = tk.Label(self.root, font=("Arial black", 18), bg="#f0f0f0")
+        self.label_hora.pack(pady=5)
 
     def exibir_mensagem_inicial(self):
         self.adicionar_mensagem("Bem-vindo ao Diagnóstico Médico!\nResponda às perguntas para encontrar possíveis diagnósticos.", "sistema")
@@ -447,7 +441,7 @@ class DiagnosticoMedico:
         pontuacao_diagnosticos = {}
         for diagnostico, sintomas in self.diagnosticos.items():
             pontuacao = sum(peso for sintoma, peso in sintomas.items() if sintoma in self.sintomas_presentes)
-            if pontuacao >= 7:  
+            if pontuacao >= 6:  
                 pontuacao_diagnosticos[diagnostico] = pontuacao
         return sorted(pontuacao_diagnosticos, key=pontuacao_diagnosticos.get, reverse=True)
 
@@ -461,7 +455,12 @@ class DiagnosticoMedico:
 
         self.exibir_mensagem_inicial()
         self.exibir_proxima_pergunta()
-
+        
+    def atualizar_hora(self):
+        agora = datetime.now()
+        hora_atual = agora.strftime("%H:%M:%S")
+        self.label_hora.config(text=hora_atual)
+        self.label_hora.after(1000, self.atualizar_hora)
 
 if __name__ == "__main__":
     root = tk.Tk()
