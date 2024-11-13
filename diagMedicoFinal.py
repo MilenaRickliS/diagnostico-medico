@@ -334,11 +334,11 @@ class DiagnosticoMedico:
                 msg_label.config(text=msg_label.cget("text") + texto[index])
                 self.root.after(50, lambda: digitar_animacao(index + 1))  # Ajuste a velocidade aqui
             else:
-                self.canvas.yview_moveto(1)  # Rola para baixo ao final
+                self.canvas.yview_moveto(1)  
 
         digitar_animacao()
         self.root.update_idletasks()
-        self.canvas.yview_moveto(1)  # Rola automaticamente para o fim
+        self.canvas.yview_moveto(1)  
  
 
     def exibir_proxima_pergunta(self):
